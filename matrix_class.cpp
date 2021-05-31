@@ -14,25 +14,28 @@ private:
 public:
   void make_space( pair<int,int> size_ ){
     size = size_;
-    a.resize( size.fst , vector<int>(size.snd,0) );
+    a = vector<vector<int>>(size_.fst, vector<int>(size_.snd));
   }
+  
 
   Matrix () {}                          // pusty konstruktor
+  
   Matrix ( pair<int,int> size_ ){       // konstruktor tworzacy macierz o określonym wymiarze
     make_space(size_);
   }
+  
   Matrix( vector< vector<int> > a_  ){  // konstruktor tworzący macierz o ustalonych wyrazach
                                         // przyjmuje wektor zawierający kolejne wiersze macierzy
-    make_space( {a_.size(),a_[0].size()} );
-    for( int i=0; i<size.fst; i++ ){
-      copy(a_[i].begin(),a_[i].end(),a[i].begin());
-    }
+    size = {a_.size(), a_[0].size()};
+    a = a_;
   }
+  
+  
   Matrix( const Matrix& other ){       // konstruktor tworzący kopie macierzy
-
-    make_space(other.size);
-    for( int i=0; i<size.fst; i++ )
-      copy(other.a[i].begin(),other.a[i].end(),a[i].begin());
+ 	// para zostanie skopiowana 	
+    size = other.size;	
+    	// vecor vektorów zostanie skopiowany
+    a = other.a;
   }
 
   void print( ){
@@ -66,6 +69,10 @@ public:
   }
 
   Matrix operator*(const Matrix& A ){
+  
+  	if( size.snd != A.size.first){
+  		throw std::length_error("Wrong matrix shape!");
+  	}
     int n = size.fst, m = size.snd, k = A.size.snd;
     Matrix M({n,k});
 
@@ -78,9 +85,9 @@ public:
   }
 
   friend ostream& operator<<( ostream& out, const Matrix& M ){
-    for( int i=0; i<M.size.fst; i++ ){
-      for( int j=0; j<M.size.snd; j++ )
-        out<<M.a[i][j]<<' ';
+    for(const auto& row : M.a ){
+      for( const auto& elem : row )
+        out<< elem <<' ';
       out<<'\n';
     }
     return out;
